@@ -79,6 +79,12 @@ python3 -m unittest discover -s tests -v
 
 欢迎通过 Issues 报告问题、通过 PR 改进。报告问题时请使用虚构对话复现，不要上传真实会话、令牌或草稿备份。
 
+## 请我喝一瓶无糖可乐 🥤
+
+如果感觉对你有用，可以赞赏我一瓶无糖可乐。
+
+<p><img src="assets/wechat-support.png" alt="微信赞赏二维码" width="280" /></p>
+
 ## License
 
 项目代码使用 MIT License，见 [LICENSE](LICENSE)。内置第三方库及各自许可证见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。本项目为独立工具，与 OpenAI 无隶属关系。
