@@ -1,6 +1,7 @@
 import json, hashlib, os
 from providers import capture_other
 from transcripts import transcript
+from titles import apply_titles
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
@@ -34,7 +35,7 @@ def capture_codex():
     return sorted({m['id']:m for m in result}.values(),key=lambda m:m['time'],reverse=True)
 
 def capture():
-    return sorted(capture_codex()+capture_other(),key=lambda m:m['time'],reverse=True)
+    return sorted(apply_titles(capture_codex()+capture_other(),SOURCE),key=lambda m:m['time'],reverse=True)
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
