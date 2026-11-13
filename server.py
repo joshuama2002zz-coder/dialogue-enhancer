@@ -1,5 +1,6 @@
 import json, hashlib, os
 from providers import capture_other
+from transcripts import transcript
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
@@ -41,6 +42,12 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(403); return
         if self.path=='/api/messages':
             data=json.dumps(capture(),ensure_ascii=False).encode(); kind='application/json'
+        elif self.path.startswith('/api/transcript?'):
+            query=parse_qs(urlparse(self.path).query)
+            try:
+                messages=transcript(query.get('provider',[''])[0],query.get('thread',[''])[0],SOURCE)
+                data=json.dumps({'messages':messages},ensure_ascii=False).encode();kind='application/json'
+            except (ValueError,FileNotFoundError): self.send_error(404);return
         elif self.path.startswith('/api/document?'):
             try:
                 name=parse_qs(urlparse(self.path).query).get('path',[''])[0]

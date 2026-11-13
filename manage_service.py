@@ -30,7 +30,7 @@ def main():
     source = Path(__file__).resolve().parent
     target.mkdir(parents=True, exist_ok=True)
     if source != target:
-        for name in ['server.py', 'providers.py', 'index.html', 'README.md', 'manage_service.py']:
+        for name in ['server.py', 'providers.py', 'transcripts.py', 'index.html', 'README.md', 'manage_service.py']:
             shutil.copy2(source / name, target / name)
         shutil.copytree(source / 'vendor', target / 'vendor', dirs_exist_ok=True)
     logs = home / 'Library/Logs/DialogueEnhancer'

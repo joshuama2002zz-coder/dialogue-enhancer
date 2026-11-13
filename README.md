@@ -94,3 +94,9 @@ python3 -m unittest discover -s tests -v
 | WorkBuddy | `~/.workbuddy/projects/*/*.jsonl` | `WORKBUDDY_HOME` |
 
 环境变量指向工具的根目录，而不是 projects 目录。Claude Code 解析 assistant.message.content 中的 text，排除 thinking 和工具调用内容；WorkBuddy 解析已完成消息中的 output_text。子代理日志不纳入主会话。会话身份按来源隔离。工具内部日志可能变化，本机已实测 Codex / WorkBuddy；Claude Code 通过虚构格式样例测试，尚未用真实本机会话验证。Claude 普通聊天 / Cowork 不属于此适配范围，可用粘贴导入。
+
+## 筛选与会话迁移
+
+左栏来源筛选支持全部、Codex、WorkBuddy、Claude 和手动导入，会记住选择。展开会话后，进入 **更多 → 复制会话上下文…**，预览并复制按本地记录顺序排列的用户问题与助手文字，交给另一个工具后再补充下一步任务。
+
+此功能导出的是对话正文，不是模型完整运行上下文：不含系统提示、工具原始输出、图片或附件内容。手动导入只能包含已粘贴内容，无法自动取得 GPT / Work 的历史问题。日志已经裁剪、压缩或缺失的内容无法还原。长会话可能超过目标工具输入限制，可在预览框中选择需要的片段复制。
