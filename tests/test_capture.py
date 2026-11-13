@@ -15,13 +15,13 @@ class CaptureTest(unittest.TestCase):
                 return json.dumps({'type':'response_item','timestamp':'2026-01-01','payload':{'role':'assistant','phase':phase,'status':'completed','content':[{'type':'output_text','text':text}]}})+'\n'
             final = message('final_answer', 'Example answer')
             (folder/'fixture.jsonl').write_text(message('commentary','Working')+final+final+'{"partial":')
-            result = server.capture()
+            result = server.capture_codex()
             self.assertEqual(len(result),1)
             self.assertEqual(result[0]['text'],'Example answer')
-            self.assertEqual(result[0]['id'],server.capture()[0]['id'])
+            self.assertEqual(result[0]['id'],server.capture_codex()[0]['id'])
 
     def test_empty(self):
         with tempfile.TemporaryDirectory() as tmp:
             self.addCleanup(setattr, server, 'SOURCE', server.SOURCE)
             server.SOURCE=Path(tmp)
-            self.assertEqual(server.capture(),[])
+            self.assertEqual(server.capture_codex(),[])

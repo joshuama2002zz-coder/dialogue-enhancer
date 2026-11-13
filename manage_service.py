@@ -30,7 +30,7 @@ def main():
     source = Path(__file__).resolve().parent
     target.mkdir(parents=True, exist_ok=True)
     if source != target:
-        for name in ['server.py', 'index.html', 'README.md', 'manage_service.py']:
+        for name in ['server.py', 'providers.py', 'index.html', 'README.md', 'manage_service.py']:
             shutil.copy2(source / name, target / name)
         shutil.copytree(source / 'vendor', target / 'vendor', dirs_exist_ok=True)
     logs = home / 'Library/Logs/DialogueEnhancer'
@@ -41,6 +41,8 @@ def main():
                 ThrottleInterval=5, ProcessType='Background',
                 StandardOutPath=str(logs/'stdout.log'), StandardErrorPath=str(logs/'stderr.log'),
                 EnvironmentVariables={'CODEX_HOME': str(Path(os.environ.get('CODEX_HOME', str(home/'.codex'))).expanduser().resolve())})
+    for env in ['CLAUDE_HOME', 'WORKBUDDY_HOME']:
+        if os.environ.get(env): data['EnvironmentVariables'][env] = str(Path(os.environ[env]).expanduser().resolve())
     subprocess.run(['launchctl', 'bootout', service], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     config.write_bytes(plistlib.dumps(data))
     subprocess.run(['launchctl', 'bootstrap', domain, str(config)], check=True)

@@ -6,7 +6,8 @@ A local reading and annotation companion for AI conversations. Select passages, 
 
 ## 功能
 
-- 自动读取本机 Codex 已完成的回复；Work / ChatGPT / 其他工具可手动粘贴。
+- 自动读取本机 Codex、WorkBuddy 与 Claude Code 会话文本；Work / ChatGPT / 其他工具可手动粘贴。
+- 左栏按来源和 session 分组，展开查看该会话的回复；支持深色模式，首次跟随系统，切换后记住选择。
 - Markdown 排版：标题、加粗、列表、表格和代码块。
 - 选中文字后自动出现意见输入框；支持全文意见。
 - 可自定义的快捷提问气泡，默认“这是什么？”“写得更易懂些”“举个例子”。
@@ -81,3 +82,15 @@ python3 -m unittest discover -s tests -v
 ## License
 
 项目代码使用 MIT License，见 [LICENSE](LICENSE)。内置第三方库及各自许可证见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。本项目为独立工具，与 OpenAI 无隶属关系。
+
+## 多工具数据源
+
+默认读取路径（可通过环境变量覆盖，设置后需重启服务）：
+
+| 来源 | 路径 | 环境变量 |
+|---|---|---|
+| Codex | `~/.codex/sessions`、`archived_sessions` | `CODEX_HOME` |
+| Claude Code | `~/.claude/projects/*/*.jsonl` | `CLAUDE_HOME` |
+| WorkBuddy | `~/.workbuddy/projects/*/*.jsonl` | `WORKBUDDY_HOME` |
+
+环境变量指向工具的根目录，而不是 projects 目录。Claude Code 解析 assistant.message.content 中的 text，排除 thinking 和工具调用内容；WorkBuddy 解析已完成消息中的 output_text。子代理日志不纳入主会话。会话身份按来源隔离。工具内部日志可能变化，本机已实测 Codex / WorkBuddy；Claude Code 通过虚构格式样例测试，尚未用真实本机会话验证。Claude 普通聊天 / Cowork 不属于此适配范围，可用粘贴导入。

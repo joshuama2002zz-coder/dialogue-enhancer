@@ -1,11 +1,12 @@
 import json, hashlib, os
+from providers import capture_other
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 ROOT=Path(__file__).resolve().parent
 SOURCE=Path(os.environ.get('CODEX_HOME',str(Path.home()/'.codex')))
 
-def capture():
+def capture_codex():
     result=[]
     for directory in ['sessions','archived_sessions']:
         for path in (SOURCE/directory).rglob('*.jsonl'):
@@ -26,10 +27,13 @@ def capture():
                         body='\n'.join(c.get('text','') for c in p.get('content',[]) if c.get('type') in ('output_text','text'))
                         if body:
                             key=hashlib.sha256((thread+'\0'+str(p.get('id') or row.get('timestamp'))+'\0'+body).encode()).hexdigest()
-                            messages.append(dict(id=key,thread=thread,text=body,time=row.get('timestamp','')))
+                            messages.append(dict(id=key,thread=thread,text=body,time=row.get('timestamp',''),provider='Codex'))
                 for m in messages: m['title']=title or thread; result.append(m)
             except (OSError,UnicodeError): continue
     return sorted({m['id']:m for m in result}.values(),key=lambda m:m['time'],reverse=True)
+
+def capture():
+    return sorted(capture_codex()+capture_other(),key=lambda m:m['time'],reverse=True)
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
