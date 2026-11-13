@@ -79,12 +79,6 @@ python3 -m unittest discover -s tests -v
 
 欢迎通过 Issues 报告问题、通过 PR 改进。报告问题时请使用虚构对话复现，不要上传真实会话、令牌或草稿备份。
 
-## 请我喝一瓶无糖可乐 🥤
-
-如果感觉对你有用，可以赞赏我一瓶无糖可乐。
-
-<p><img src="assets/wechat-support.png" alt="微信赞赏二维码" width="280" /></p>
-
 ## License
 
 项目代码使用 MIT License，见 [LICENSE](LICENSE)。内置第三方库及各自许可证见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。本项目为独立工具，与 OpenAI 无隶属关系。
@@ -110,3 +104,9 @@ python3 -m unittest discover -s tests -v
 来源筛选采用可点击气泡，选中项高亮。会话标题优先使用 Codex 的 session_index、WorkBuddy 的只读会话数据库、Claude Code 的 sessions-index 中的名称；没有名称时在本地清理并截取主题句，不调用外部模型、不上传对话。这是规则式简化，不保证理解复杂长对话的全部主题。
 
 追问预览支持卡片阅读视图与 Prompt 原文切换。顶部提供三种互斥的回复方式气泡：根据要求重新生成回复、解答我的问题、先解答我的问题再重新生成回复。点击后即时更新最终复制的指令，不会重复叠加不同回复方式。会话迁移和粘贴入口不会显示这组气泡。
+
+## 请我喝一瓶无糖可乐 🥤
+
+如果感觉对你有用，可以赞赏我一瓶无糖可乐。
+
+<p><img src="assets/wechat-support.png" alt="微信赞赏二维码" width="180" /></p>
