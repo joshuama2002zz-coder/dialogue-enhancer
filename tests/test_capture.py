@@ -25,3 +25,15 @@ class CaptureTest(unittest.TestCase):
             self.addCleanup(setattr, server, 'SOURCE', server.SOURCE)
             server.SOURCE=Path(tmp)
             self.assertEqual(server.capture_codex(),[])
+
+    def test_questions_follow_each_turn(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.addCleanup(setattr, server, 'SOURCE', server.SOURCE)
+            server.SOURCE=Path(tmp)
+            folder=server.SOURCE/'sessions';folder.mkdir()
+            rows=[]
+            for role,body in [('user','First question'),('assistant','First answer'),('user','Second question'),('assistant','Second answer')]:
+                rows.append({'type':'response_item','payload':{'role':role,'phase':'final_answer','content':[{'type':'input_text' if role=='user' else 'output_text','text':body}]}})
+            (folder/'s.jsonl').write_text('\n'.join(json.dumps(r) for r in rows))
+            result=server.capture_codex()
+            self.assertEqual([(m['text'],m['question']) for m in result],[('First answer','First question'),('Second answer','Second question')])

@@ -13,7 +13,7 @@ def capture_codex():
     for directory in ['sessions','archived_sessions']:
         for path in (SOURCE/directory).rglob('*.jsonl'):
             try:
-                thread=path.stem; title=''; messages=[]
+                thread=path.stem; title=''; question=''; messages=[]
                 with path.open() as stream:
                     for line in stream:
                         try: row=json.loads(line)
@@ -21,15 +21,17 @@ def capture_codex():
                         p=row.get('payload',{})
                         if row.get('type')=='session_meta': thread=p.get('id',thread)
                         if row.get('type')!='response_item': continue
-                        if p.get('role')=='user' and not title:
+                        if p.get('role')=='user':
                             text='\n'.join(c.get('text','') for c in p.get('content',[]) if c.get('type') in ('input_text','text'))
-                            if text and not text.startswith(('<environment_context>','<permissions')): title=text[:100]
+                            if text and not text.lstrip().startswith(('<environment_context>','<permissions','<external_codex_apps','<system')):
+                                question=text
+                                if not title: title=text[:100]
                         if p.get('role')!='assistant' or p.get('phase',p.get('channel')) not in ('final_answer','final'): continue
                         if p.get('status') not in (None,'completed'): continue
                         body='\n'.join(c.get('text','') for c in p.get('content',[]) if c.get('type') in ('output_text','text'))
                         if body:
                             key=hashlib.sha256((thread+'\0'+str(p.get('id') or row.get('timestamp'))+'\0'+body).encode()).hexdigest()
-                            messages.append(dict(id=key,thread=thread,text=body,time=row.get('timestamp',''),provider='Codex'))
+                            messages.append(dict(id=key,thread=thread,text=body,time=row.get('timestamp',''),provider='Codex',question=question))
                 for m in messages: m['title']=title or thread; result.append(m)
             except (OSError,UnicodeError): continue
     return sorted({m['id']:m for m in result}.values(),key=lambda m:m['time'],reverse=True)

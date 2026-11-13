@@ -18,6 +18,7 @@ class ProviderTest(unittest.TestCase):
         self.assertEqual(result[0]['text'],'Example answer')
         self.assertEqual(result[0]['thread'],'s')
         self.assertEqual(result[0]['title'],'Example question')
+        self.assertEqual(result[0]['question'],'Example question')
 
     def test_workbuddy(self):
         rows=[{'role':'assistant','status':'streaming','content':'Incomplete'},
