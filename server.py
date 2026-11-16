@@ -2,6 +2,7 @@ import json, hashlib, os
 from providers import capture_other
 from transcripts import transcript
 from titles import apply_titles
+from web_reader import fetch_article
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
@@ -45,6 +46,13 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(403); return
         if self.path=='/api/messages':
             data=json.dumps(capture(),ensure_ascii=False).encode(); kind='application/json'
+        elif self.path.startswith('/api/article?'):
+            try:
+                article=fetch_article(parse_qs(urlparse(self.path).query).get('url',[''])[0])
+                data=json.dumps(article,ensure_ascii=False).encode();kind='application/json'
+            except Exception as error:
+                message=str(error) if isinstance(error,ValueError) else '读取失败：网络超时、证书错误或网站限制。请尝试其他链接。'
+                data=json.dumps({'error':message},ensure_ascii=False).encode();kind='application/json'
         elif self.path.startswith('/api/transcript?'):
             query=parse_qs(urlparse(self.path).query)
             try:
@@ -59,7 +67,7 @@ class Handler(BaseHTTPRequestHandler):
                 if path.suffix.lower() not in ('.md','.txt','.py','.js','.json','.command','.html','.css') or path.stat().st_size>1000000: raise ValueError()
                 data=json.dumps({'text':path.read_text(),'markdown':path.suffix.lower()=='.md'},ensure_ascii=False).encode(); kind='application/json'
             except (OSError,ValueError,UnicodeError): self.send_error(404); return
-        elif self.path in ('/vendor/marked.js','/vendor/purify.js'):
+        elif self.path in ('/vendor/marked.js','/vendor/purify.js','/vendor/readability.js'):
             data=(ROOT/self.path.lstrip('/')).read_bytes(); kind='application/javascript'
         elif self.path in ('/','/index.html'):
             data=(ROOT/'index.html').read_bytes(); kind='text/html; charset=utf-8'

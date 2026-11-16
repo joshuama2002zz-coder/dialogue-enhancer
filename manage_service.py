@@ -6,6 +6,7 @@ import plistlib
 import shutil
 import subprocess
 import sys
+import time
 
 LABEL = 'local.dialogue-enhancer'
 
@@ -30,7 +31,7 @@ def main():
     source = Path(__file__).resolve().parent
     target.mkdir(parents=True, exist_ok=True)
     if source != target:
-        for name in ['server.py', 'providers.py', 'transcripts.py', 'titles.py', 'index.html', 'README.md', 'manage_service.py']:
+        for name in ['server.py', 'providers.py', 'transcripts.py', 'titles.py', 'web_reader.py', 'index.html', 'README.md', 'manage_service.py']:
             shutil.copy2(source / name, target / name)
         shutil.copytree(source / 'vendor', target / 'vendor', dirs_exist_ok=True)
     logs = home / 'Library/Logs/DialogueEnhancer'
@@ -45,7 +46,12 @@ def main():
         if os.environ.get(env): data['EnvironmentVariables'][env] = str(Path(os.environ[env]).expanduser().resolve())
     subprocess.run(['launchctl', 'bootout', service], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     config.write_bytes(plistlib.dumps(data))
-    subprocess.run(['launchctl', 'bootstrap', domain, str(config)], check=True)
+    for attempt in range(6):
+        boot = subprocess.run(['launchctl', 'bootstrap', domain, str(config)], capture_output=True, text=True)
+        if boot.returncode == 0: break
+        time.sleep(0.5)
+    else:
+        raise RuntimeError(boot.stderr.strip())
     print('Installed: http://127.0.0.1:8765 — starts at login and restarts on exit.')
     return 0
 
