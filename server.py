@@ -67,7 +67,7 @@ class Handler(BaseHTTPRequestHandler):
                 if path.suffix.lower() not in ('.md','.txt','.py','.js','.json','.command','.html','.css') or path.stat().st_size>1000000: raise ValueError()
                 data=json.dumps({'text':path.read_text(),'markdown':path.suffix.lower()=='.md'},ensure_ascii=False).encode(); kind='application/json'
             except (OSError,ValueError,UnicodeError): self.send_error(404); return
-        elif self.path in ('/vendor/marked.js','/vendor/purify.js','/vendor/readability.js'):
+        elif self.path in ('/vendor/marked.js','/vendor/purify.js','/vendor/readability.js','/vendor/mammoth.js'):
             data=(ROOT/self.path.lstrip('/')).read_bytes(); kind='application/javascript'
         elif self.path in ('/','/index.html'):
             data=(ROOT/'index.html').read_bytes(); kind='text/html; charset=utf-8'
